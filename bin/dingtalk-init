@@ -1,0 +1,127 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const exists = require('fs').existsSync;
+const download = require('download-git-repo');
+const chalk = require('chalk');
+const commander = require('commander');
+const inquirer = require('inquirer');
+const ora = require('ora');
+const home = require('user-home');
+const rm = require('rimraf').sync;
+const checkVersion = require('../src/check-version.js');
+const localPath = require('../src/local-path');
+const createGenerateProject = require('../src/create-generate.js');
+const logger = require('../src/logger.js');
+const install = require('../src/npm-install.js');
+
+const success = logger.success;
+const fail = logger.fail;
+const isLocalPath = localPath.isLocalPath
+const getTemplatePath = localPath.getTemplatePath
+
+commander
+  .usage('<template-name> [project-name]')
+
+process.on('exit', function () {
+  console.log()
+});
+
+commander.on('--help',function(){
+  console.log('  Examples:');
+  console.log();
+  console.log(chalk.gray('    # create a new project with an official template'));
+  console.log('    $ dingtalk init webpack my-project');
+  console.log();
+});
+
+function help(){
+  commander.parse(process.argv);
+  if (commander.args.length < 1){
+    return commander.help();
+  }
+}
+
+help();
+
+/*
+ *  template type
+ *
+ *  "simple"  simple weex project
+ *
+ *  "webpack-simple" No integrated vuex vue-router, only integrated Dingtalk SDK.
+ *
+ *  "webpack" integrated Dingtalk SDK，journey，vue-router and vuex，support web.
+ */
+
+let template = commander.args[0];
+let name = commander.args[1];
+let to = path.resolve(name || '.');
+let tmp = path.join(home, '.dingtalk-templates', template.replace(/\//g, '-'));
+let clone = commander.clone || false;
+let project_name = (!name || name === '.') ? path.relative('../', process.cwd()) : name;
+
+if (commander.offline) {
+  console.log(`> Use cached template at ${chalk.yellow(tildify(tmp))}`)
+  template = tmp
+}
+
+function run(){
+  if (isLocalPath(template)){
+    const templatePath = getTemplatePath(template);
+    console.log(chalk.yellow('the future support : use cached template'))
+  } else {
+    success('await....check cli version')
+    checkVersion(function(){
+      // 只能使用官方模板
+      const officialTemplate = 'dingtalk-templates/' + template;
+      downloadGenerate(officialTemplate);
+    });
+  }
+}
+
+function downloadGenerate(Template){
+  let spinner = ora('downloading template ');
+  spinner.start();
+
+  if (exists(tmp)){
+    // remove local template
+    rm(tmp);
+  }
+
+  download(Template, tmp, {clone: clone}, function(err){
+    spinner.stop();
+    if (err){
+      fail('Failed to download repo ' + Template + ': ' + err.message);
+      return;
+    }
+    createGenerateProject(project_name,tmp,to,function(err){
+      if (err){
+        fail(err);
+        return;
+      }
+      console.log();
+      success('Generated .' + project_name);
+      console.log();
+      install(project_name);
+    });
+  });
+}
+
+if (exists(to)){
+  // 如果需要生成的项目已经存在
+  // inquirer.prompt([{
+  //   type: 'confirm',
+  //   message: 'ignore',
+  //   name: 'ok'
+  // }]).then(function(answers){
+  //   if (answers.ok){
+  //     // 暂不处理
+  //   }
+    
+  // });
+  console.log(chalk.red('don\'t deal with. you must remove your current create project'));
+} else {
+  run();
+}
+
