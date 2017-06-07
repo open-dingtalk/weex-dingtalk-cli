@@ -1,8 +1,15 @@
-#!/usr/bin/env node
+var co = require('co');
+var inquirer = require('inquirer');
 
-const program = require('commander');
-const package = require('./package.json');
-program
-  .version(package.version)
-  .usage('<command> [options]')
-  .parse(process.argv)
+co(function *(){
+  const c = yield new Promise(function(resolve){
+    inquirer.prompt({
+      type: 'input', 
+      message: 'enter Author, the default author is icepy:', 
+      name: 'author'
+    }).then(function (answers) {
+      resolve(answers.author || 'icepy');
+    });
+  });
+  console.log(c)
+})

@@ -8,7 +8,8 @@ const commander = require('commander');
 const inquirer = require('inquirer');
 const ora = require('ora');
 const home = require('user-home');
-const rm = require('rimraf').sync;
+const rm = require('rimraf');
+const co = require('co');
 const checkVersion = require('../src/check-version.js');
 const localPath = require('../src/local-path');
 const createGenerateProject = require('../src/create-generate.js');
@@ -28,6 +29,10 @@ process.on('exit', function () {
 });
 
 commander.on('--help',function(){
+  console.log('  Template:');
+  console.log();
+  console.log(chalk.green('    # simple, webpack-simple, webpack'));
+  console.log();
   console.log('  Examples:');
   console.log();
   console.log(chalk.gray('    # create a new project with an official template'));
@@ -71,7 +76,7 @@ function run(){
     const templatePath = getTemplatePath(template);
     console.log(chalk.yellow('the future support : use cached template'))
   } else {
-    success('await....check cli version')
+    success('await.... check cli version')
     checkVersion(function(){
       // 只能使用官方模板
       const officialTemplate = 'dingtalk-templates/' + template;
@@ -81,30 +86,87 @@ function run(){
 }
 
 function downloadGenerate(Template){
-  let spinner = ora('downloading template ');
-  spinner.start();
-
   if (exists(tmp)){
     // remove local template
-    rm(tmp);
+    rm(tmp,function(err){
+      if (err){
+        fail('Failed to rm -rf localhost repo ' + Template + ': ' + JSON.stringify(err));
+        return;
+      }
+      downloadHandler(Template);
+    });
+  } else {
+    downloadHandler(Template);
   }
+}
 
+function downloadHandler(Template){
+  let spinner = ora('downloading template ');
+  spinner.start();
   download(Template, tmp, {clone: clone}, function(err){
     spinner.stop();
     if (err){
       fail('Failed to download repo ' + Template + ': ' + err.message);
       return;
     }
-    createGenerateProject(project_name,tmp,to,function(err){
-      if (err){
-        fail(err);
-        return;
-      }
-      console.log();
-      success('Generated .' + project_name);
-      console.log();
-      install(project_name);
+    collectMetaData(function(meta){
+      createGenerateProject(project_name,tmp,to,meta,function(err){
+        if (err){
+          fail(err);
+          return;
+        }
+        console.log();
+        success('Generated .' + project_name);
+        console.log();
+        install(to);
+      });
     });
+    
+  });
+}
+
+function collectMetaData(cb){
+  co(function *(){
+    const poName = yield new Promise(function(resolve,reject){
+      inquirer.prompt({
+        type: 'input', 
+        message: 'enter your project name, the default name is "'+ project_name +'":', 
+        name: 'name'
+      }).then(function (answers) {
+        resolve(answers.name || project_name);
+      }).catch(function(err){
+        reject(err)
+      });
+    });
+    const author = yield new Promise(function(resolve,reject){
+      inquirer.prompt({
+        type: 'input', 
+        message: 'enter Author, the default author is "icepy":', 
+        name: 'author'
+      }).then(function (answers) {
+        resolve(answers.author || 'icepy');
+      }).catch(function(err){
+        reject(err)
+      });
+    });
+    const description = yield new Promise(function(resolve,reject){
+      inquirer.prompt({
+        type: 'input', 
+        message: 'enter description, the default description is "A Weex and Vue.js projec":', 
+        name: 'description'
+      }).then(function (answers) {
+        resolve(answers.description || 'A Weex and Vue.js projec');
+      }).catch(function(err){
+        reject(err)
+      });
+    });
+    typeof cb === 'function' && cb({
+      name: poName,
+      author: author,
+      description: description
+    });
+  }).catch(function(err){
+    fail(JSON.stringify(err));
   });
 }
 
@@ -118,7 +180,6 @@ if (exists(to)){
   //   if (answers.ok){
   //     // 暂不处理
   //   }
-    
   // });
   console.log(chalk.red('don\'t deal with. you must remove your current create project'));
 } else {

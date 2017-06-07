@@ -5,9 +5,9 @@ const ora = require('ora');
 const fail = logger.fail;
 const success = logger.success;
 
-function install(name){
-  shell.cd(name);
-  let spinner = ora('install node modules ');
+function install(toPath){
+  shell.cd(toPath);
+  let spinner = ora('install node modules');
   spinner.start();
   let child = shell.exec('npm install',{ silent:true, async:true });
   child.stdout.on('data',function(data){
