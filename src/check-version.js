@@ -34,6 +34,7 @@ function check_version(cb){
         console.log();
       } else {
         success('is the latest');
+        console.log();
       }
       typeof cb === 'function' && cb();
     }

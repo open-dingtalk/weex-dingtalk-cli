@@ -14,4 +14,8 @@ $ npm install -g weex-dingtalk-cli
 $ dingtalk init simple icepy
 ```
 
+```bash
+$ dingtalk init
+```
+
 ... ^_^
