@@ -9,7 +9,6 @@ function generate(name, tmpPath, toPath, meta, cb){
     inPlace: toPath === process.cwd(),
     noEscape: true
   }),meta);
-  console.log(data);
   metalsmith.use(renderTemplateFiles(data))
   metalsmith.clean(false)
     .source('.')
