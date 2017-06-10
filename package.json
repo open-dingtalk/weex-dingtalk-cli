@@ -1,6 +1,6 @@
 {
   "name": "weex-dingtalk-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A simple CLI for scaffolding Dingtalk Weex Microapp projects.",
   "main": "index.js",
   "bin": {

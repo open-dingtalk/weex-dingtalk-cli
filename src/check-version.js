@@ -28,9 +28,9 @@ function check_version(cb){
       if (semver.lt(currentVersion, lastVersion)){
         warn('  A newer version of dingtalk-cli is available.')
         console.log();
-        success('  latest:    ' + latestVersion)
+        success('  latest:    ' + lastVersion)
         console.log();
-        bad('  installed: ' + localVersion)
+        bad('  installed: ' + currentVersion)
         console.log();
       } else {
         success('is the latest');
