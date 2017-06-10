@@ -24,10 +24,6 @@ fetchTemplates().then(function(data){
         ' - ' + repo.description
       );
       console.log(
-        '     ' + chalk.green('- html url : ') +
-        '' + repo.html_url
-      );
-      console.log(
         '     ' + chalk.green('- pushed at : ') +
         '' + moment(repo.pushed_at).format('YYYY-MM-DD HH:mm:ss:SSS')
       );
