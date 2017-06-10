@@ -23,6 +23,7 @@ const getTemplatePath = localPath.getTemplatePath
 
 commander
   .usage('<template-name> [project-name]')
+  .option('--offline','use cached template')
 
 process.on('exit', function () {
   console.log()
@@ -67,7 +68,7 @@ let clone = commander.clone || false;
 let project_name = (!name || name === '.') ? path.relative('../', process.cwd()) : name;
 
 if (commander.offline) {
-  console.log(`> Use cached template at ${chalk.yellow(tildify(tmp))}`)
+  console.log(`> Use cached template at ` + chalk.yellow(tmp));
   template = tmp
 }
 
@@ -75,6 +76,22 @@ function run(){
   if (isLocalPath(template)){
     const templatePath = getTemplatePath(template);
     console.log(chalk.yellow('the future support : use cached template'))
+    if (exists(templatePath)){
+      collectMetaData(function(meta){
+        createGenerateProject(project_name,templatePath,to,meta,function(err){
+          if (err){
+            fail(err);
+            return;
+          }
+          console.log();
+          success('Generated .' + project_name);
+          console.log();
+          install(to);
+        });
+      });
+    } else {
+      fail('Local template "'+ templatePath +'" not found.');
+    }
   } else {
     success('await.... check cli version')
     checkVersion(function(){
@@ -121,7 +138,6 @@ function downloadHandler(Template){
         install(to);
       });
     });
-    
   });
 }
 
@@ -134,19 +150,15 @@ function collectMetaData(cb){
         name: 'name'
       }).then(function (answers) {
         resolve(answers.name || project_name);
-      }).catch(function(err){
-        reject(err)
       });
     });
     const author = yield new Promise(function(resolve,reject){
       inquirer.prompt({
         type: 'input', 
-        message: 'enter Author, the default author is "icepy":', 
+        message: 'enter author, the default author is "icepy":', 
         name: 'author'
       }).then(function (answers) {
         resolve(answers.author || 'icepy');
-      }).catch(function(err){
-        reject(err)
       });
     });
     const description = yield new Promise(function(resolve,reject){
@@ -156,8 +168,6 @@ function collectMetaData(cb){
         name: 'description'
       }).then(function (answers) {
         resolve(answers.description || 'A Weex and Vue.js projec');
-      }).catch(function(err){
-        reject(err)
       });
     });
     typeof cb === 'function' && cb({
@@ -181,7 +191,7 @@ if (exists(to)){
   //     // 暂不处理
   //   }
   // });
-  console.log(chalk.red('don\'t deal with. you must remove your current create project'));
+  console.log(chalk.red('don\'t deal with. you must remove your current create project: ' + to));
 } else {
   run();
 }

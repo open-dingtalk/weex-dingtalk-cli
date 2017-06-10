@@ -1,11 +1,12 @@
 {
   "name": "weex-dingtalk-cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A simple CLI for scaffolding Dingtalk Weex Microapp projects.",
   "main": "index.js",
   "bin": {
     "dingtalk": "bin/dingtalk",
-    "dingtalk-init": "bin/dingtalk-init"
+    "dingtalk-init": "bin/dingtalk-init",
+    "dingtalk-list": "bin/dingtalk-list"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -30,6 +31,7 @@
     "handlebars": "^4.0.10",
     "inquirer": "^3.0.6",
     "metalsmith": "^2.3.0",
+    "moment": "^2.18.1",
     "ora": "^1.2.0",
     "rimraf": "^2.6.1",
     "semver": "^5.3.0",

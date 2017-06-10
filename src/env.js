@@ -8,5 +8,6 @@ module.exports = {
   "weex_toolkit_info": weex_toolkit_info,
   "weex_dingtalk_info": weex_dingtalk_info,
   "weex_dingtalk_cli_info": weex_dingtalk_cli_info,
-  "weex_vue_render_info": weex_vue_render_info
+  "weex_vue_render_info": weex_vue_render_info,
+  "dingtalk_templates": 'https://api.github.com/users/dingtalk-templates/repos'
 };

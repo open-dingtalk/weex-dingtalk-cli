@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+const chalk = require('chalk');
+const moment = require('moment');
+const fetchTemplates = require('../src/fetch-templates.js');
+const logger = require('../src/logger.js');
+
+const fail = logger.fail;
+const success = logger.success;
+
+console.log()
+process.on('exit', function () {
+  console.log()
+})
+
+fetchTemplates().then(function(data){
+  if (Array.isArray(data)){
+    console.log('Available official templates:');
+    console.log();
+    data.forEach(function(repo){
+      console.log(
+        ' ' + chalk.yellow('★') +
+        ' ' + chalk.blue(repo.name) + 
+        ' - ' + repo.description
+      );
+      console.log(
+        '     ' + chalk.green('- html url : ') +
+        '' + repo.html_url
+      );
+      console.log(
+        '     ' + chalk.green('- pushed at : ') +
+        '' + moment(repo.pushed_at).format('YYYY-MM-DD HH:mm:ss:SSS')
+      );
+      console.log();
+    });
+  } else {
+    fail('Not Found Meta Data');
+  }
+}).catch(function(err){
+  fail(JSON.stringify(err));
+});

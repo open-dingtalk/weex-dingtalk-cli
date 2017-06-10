@@ -11,11 +11,23 @@ $ npm install -g weex-dingtalk-cli
 ## Usage
 
 ```bash
-$ dingtalk init simple icepy
+$ dingtalk
 ```
 
 ```bash
 $ dingtalk init
 ```
 
-... ^_^
+```bash
+$ dingtalk init simple icepy
+```
+
+```bash
+$ dingtalk init simple icepy --offline
+```
+
+```bash
+$ dingtalk list
+```
+
+... ^_^ 🔥 Thanks for use.
