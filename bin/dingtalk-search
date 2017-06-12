@@ -1,0 +1,106 @@
+#!/usr/bin/env node
+
+const chalk = require('chalk');
+const commander = require('commander');
+const axios = require('axios');
+const logger = require('../src/logger.js');
+const env = require('../src/env.js');
+
+const fail = logger.fail;
+const bad = logger.bad;
+const success = logger.success;
+
+commander
+  .usage('<module-name>')
+
+console.log();
+process.on('exit', function () {
+  console.log();
+})
+
+commander.on('--help',function(){
+  console.log('  modules:');
+  console.log();
+  console.log(chalk.green('    # weex-dingtalk, weex-dingtalk-journey'));
+  console.log();
+  console.log('  alias:');
+  console.log();
+  console.log(chalk.green('    # weex-dingtalk -> [wd], weex-dingtalk-journey -> [wdj]'));
+  // console.log(chalk.green('    # weex-dingtalk, weex-dingtalk-journey, weex-dingtalk-cli, weex-dingtalk-render'));
+  // console.log(chalk.green('    # weex-dingtalk-extension, weex-dingtalk-learned, weex-ebook'));
+  console.log();
+  console.log('  Examples:');
+  console.log();
+  console.log(chalk.gray('    # search the specified dingtalk for modules'));
+  console.log('    $ dingtalk search weex-dingtalk');
+  console.log();
+});
+
+function help(){
+  commander.parse(process.argv);
+  if (commander.args.length < 1){
+    return commander.help();
+  }
+}
+
+help();
+
+let moduleName = commander.args[0];
+let moduleNameMap = {
+  wd: 'weex-dingtalk',
+  wdj: 'weex-dingtalk-journey',
+  wdc: 'weex-dingtalk-cli',
+  wvr: 'weex-vue-render',
+  wtk: 'weex-toolkit'
+}
+let moduleAlias = Object.keys(moduleNameMap);
+let moduleFullNames = moduleAlias.map(function(v){
+  return moduleNameMap[v];
+});
+if (moduleAlias.indexOf(moduleName) > -1){
+  moduleName = moduleNameMap[moduleName];
+  run();
+} else {
+  if (moduleFullNames.indexOf(moduleName) > -1){
+    console.log();
+    console.log();
+    run();
+  } else {
+    fail('please enter the correct module name');
+  }
+}
+
+function run(){
+  const package = env[moduleName];
+  const url = package.url;
+  const type = package.type;
+  success('await ... getting network data');
+  console.log();
+  axios({
+    method: 'get',
+    url: url
+  }).then(function(res){
+    const data = res.data;
+    if (res.status === 200){
+      message(data);
+    } else {
+      bad(JSON.stringify(res));
+    }
+  }).catch(function(err){
+    fail(JSON.stringify(err));
+  });
+}
+
+function message(meta){
+  console.log(
+    ' ' + chalk.yellow('★') +
+    ' ' + chalk.blue(meta.name) + 
+    ' - ' + meta.description
+  );
+  console.log(
+    '     ' + chalk.green('- latest : ') +
+    '' + meta['dist-tags'].latest
+  );
+  console.log();
+  success('done');
+}

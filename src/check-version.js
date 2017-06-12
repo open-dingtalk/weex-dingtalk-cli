@@ -10,7 +10,8 @@ const success = logger.success;
 const bad = logger.bad;
 
 function check_version(cb){
-  const cliVersion = env['weex_dingtalk_cli_info'];
+  const cliVersion = env['weex-dingtalk-cli'];
+  const url = cliVersion.url;
   if (!semver.satisfies(process.version, packageConfig.engines.node)){
     return console.log(chalk.red(
       'You must upgrade node to >=' + packageConfig.engines.node + '.x to use weex-dingtalk-cli'
@@ -18,7 +19,7 @@ function check_version(cb){
   }
   axios({
     method: 'get',
-    url: cliVersion
+    url: url
   })
   .then(function(res){
     const data = res.data;

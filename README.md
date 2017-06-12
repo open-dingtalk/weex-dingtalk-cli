@@ -30,4 +30,8 @@ $ dingtalk init simple icepy --offline
 $ dingtalk list
 ```
 
+```bash
+$ dingtalk search
+```
+
 ... ^_^ 🔥 Thanks for use.

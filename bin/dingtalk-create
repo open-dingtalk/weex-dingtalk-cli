@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const chalk = require('chalk');
+const commander = require('commander');
+
+commander
+  .usage('<template-name> [file-name]')
+
+process.on('exit', function () {
+  console.log()
+});
+
+commander.on('--help',function(){
+  console.log('  Examples:');
+  console.log();
+  console.log(chalk.gray('    # create a new vue file with an official template'));
+  console.log('    $ dingtalk create vue src/v');
+  console.log();
+});
+
+function help(){
+  commander.parse(process.argv);
+  if (commander.args.length < 1){
+    return commander.help();
+  }
+}
+
+help();
+
+let template = commander.args[0];
+let name = commander.args[1];
+let to = path.resolve(name || '.');
+console.log(template);
+console.log(name);
+
+/**
+ * some template
+ * 
+ * vue  vue code
+ */
+

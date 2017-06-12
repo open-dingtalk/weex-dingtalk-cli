@@ -8,4 +8,5 @@ program
   .usage('<command> [options]')
   .command('init','generate a new project from a template')
   .command('list', 'list available official templates')
+  .command('search', 'search the specified dingtalk for modules')
   .parse(process.argv)
