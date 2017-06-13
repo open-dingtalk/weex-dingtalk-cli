@@ -14,15 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/icepy/weex-dingtalk-cli.git"
+    "url": "git+https://github.com/open-dingtalk/weex-dingtalk-cli.git"
   },
   "keywords": [],
   "author": "icepy",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/icepy/weex-dingtalk-cli/issues"
+    "url": "https://github.com/open-dingtalk/weex-dingtalk-cli/issues"
   },
-  "homepage": "https://github.com/icepy/weex-dingtalk-cli#readme",
+  "homepage": "https://github.com/open-dingtalk/weex-dingtalk-cli#readme",
   "dependencies": {
     "axios": "^0.16.1",
     "chalk": "^1.1.3",
