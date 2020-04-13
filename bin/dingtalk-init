@@ -7,7 +7,6 @@ const chalk = require('chalk');
 const commander = require('commander');
 const inquirer = require('inquirer');
 const ora = require('ora');
-const home = require('user-home');
 const rm = require('rimraf');
 const co = require('co');
 const checkVersion = require('../src/check-version.js');
@@ -15,6 +14,8 @@ const localPath = require('../src/local-path');
 const createGenerateProject = require('../src/create-generate.js');
 const logger = require('../src/logger.js');
 const install = require('../src/npm-install.js');
+
+const home = require('os').homedir();
 
 const success = logger.success;
 const fail = logger.fail;
